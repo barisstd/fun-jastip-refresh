@@ -28,3 +28,4 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+- The order-lookup app lives in src/jastip (ported from the barisstd/jastipootb Vite app) and is rendered by the / route; keep its legacy token class names (paper, ink, cloth, marigold...) mapped in src/styles.css.
