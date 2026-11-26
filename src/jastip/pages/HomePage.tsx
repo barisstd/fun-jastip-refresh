@@ -30,7 +30,7 @@ export function HomePage({ onSubmit, initialValue = "" }: HomePageProps) {
           Hai! Mau cek <span className="text-marigold">pesanan</span>?
         </h1>
         <p className="mx-auto mt-2 max-w-[290px] text-[15px] leading-relaxed text-ink/60">
-          Lihat status, pembayaran, dan sisa tagihanmu dalam sekejap.
+          Lihat detail pesanan, pembayaran, dan sisa tagihanmu dalam sekejap.
         </p>
       </div>
 
@@ -60,7 +60,7 @@ export function HomePage({ onSubmit, initialValue = "" }: HomePageProps) {
       </div>
 
       <p className="mt-auto pt-8 text-center text-xs leading-relaxed text-ink/45">
-        🔒 Kami hanya memakai 4 digit terakhir nomor HP kamu — bukan nomor lengkap.
+        🔒 Kami hanya memakai 4 digit terakhir nomor HP kamu untuk menemukan pesanan — bukan nomor lengkap.
       </p>
     </div>
   );
