@@ -16,4 +16,3 @@ export default defineConfig({
     server: { entry: "server" },
   },
 });
-npm install -D @netlify/vite-plugin-tanstack-start
