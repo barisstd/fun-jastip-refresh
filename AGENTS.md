@@ -31,3 +31,4 @@ use the editor.
 - The order-lookup app lives in src/jastip (ported from the barisstd/jastipootb Vite app) and is rendered by the / route; keep its legacy token class names (paper, ink, cloth, marigold...) mapped in src/styles.css.
 - Order requests use CloudOrdersApi and a same-origin server function with APPS_SCRIPT_URL/APPS_SCRIPT_CLIENT_TOKEN secrets; never silently fall back to mocks, so publication cannot switch real orders to sample data.
 - Initialize browser device IDs only inside order request events, not constructors or module scope, to keep SSR compatible.
+- Generate invoice PDFs from order data with jsPDF/AutoTable, loaded after hydration and prepared before download clicks; data-driven pagination avoids screenshot artifacts and preserves mobile download activation.

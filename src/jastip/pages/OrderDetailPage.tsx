@@ -1,13 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScreenHeader } from "@/jastip/components/ScreenHeader";
-import { InvoiceImage } from "@/jastip/components/InvoiceImage";
 import { PaymentStatusBadge } from "@/jastip/components/PaymentStatusBadge";
 import { ProductRow } from "@/jastip/components/ProductRow";
 import { PaymentSummaryCard } from "@/jastip/components/PaymentSummaryCard";
 import { PaymentAccountsPanel } from "@/jastip/components/PaymentAccountsPanel";
 import { Button } from "@/jastip/components/Button";
 import { formatOrderDate } from "@/jastip/lib/format";
-import { downloadElementAsPng } from "@/jastip/lib/downloadInvoice";
 import type { OrderDetail } from "@/jastip/types/order";
 
 interface OrderDetailPageProps {
@@ -22,8 +20,19 @@ export function OrderDetailPage({ order, onBack, showBack }: OrderDetailPageProp
   const [showPayment, setShowPayment] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState(false);
-  const invoiceRef = useRef<HTMLDivElement>(null);
+  const [preparedInvoice, setPreparedInvoice] = useState<{ order: OrderDetail; blob: Blob; deliver: (blob: Blob, filename: string) => Promise<void> } | null>(null);
+  const [prepareAttempt, setPrepareAttempt] = useState(0);
   const isUnpaid = order.paymentStatus !== "LUNAS";
+
+  useEffect(() => {
+    let cancelled = false;
+    setDownloadError(false);
+    void import("@/jastip/lib/downloadInvoice").then(({ createInvoicePdf, deliverInvoicePdf }) => {
+      const blob = createInvoicePdf(order).output("blob");
+      if (!cancelled) setPreparedInvoice({ order, blob, deliver: deliverInvoicePdf });
+    }).catch(() => { if (!cancelled) setDownloadError(true); });
+    return () => { cancelled = true; };
+  }, [order, prepareAttempt]);
 
   const waMessage = encodeURIComponent(
     `Halo Admin Ijun Bookstore, saya mau tanya soal pesanan ${order.orderId} (${order.customerName}).`
@@ -31,11 +40,16 @@ export function OrderDetailPage({ order, onBack, showBack }: OrderDetailPageProp
   const waHref = `https://wa.me/${ADMIN_WHATSAPP}?text=${waMessage}`;
 
   async function handleDownload() {
-    if (!invoiceRef.current || downloading) return;
+    if (downloading) return;
+    if (!preparedInvoice || preparedInvoice.order !== order) {
+      setPrepareAttempt((attempt) => attempt + 1);
+      return;
+    }
     setDownloading(true);
     setDownloadError(false);
     try {
-      await downloadElementAsPng(invoiceRef.current, `invoice-${order.orderId}.png`);
+      const safeId = order.orderId.replace(/[^a-zA-Z0-9_-]/g, "_");
+      await preparedInvoice.deliver(preparedInvoice.blob, `invoice-${safeId}.pdf`);
     } catch {
       setDownloadError(true);
     } finally {
@@ -124,21 +138,17 @@ export function OrderDetailPage({ order, onBack, showBack }: OrderDetailPageProp
           >
             Hubungi Admin
           </Button>
-          <Button variant="outline" fullWidth loading={downloading} onClick={handleDownload}>
-            Download Invoice
+          <Button variant="outline" fullWidth loading={downloading || (!downloadError && preparedInvoice?.order !== order)} onClick={handleDownload}>
+            Download Invoice PDF
           </Button>
           {downloadError && (
             <p className="text-center text-sm text-brick">
-              Gagal membuat gambar invoice. Coba lagi ya.
+              Gagal membuat PDF invoice. Coba lagi ya.
             </p>
           )}
         </div>
       </div>
 
-      {/* Off-screen copy of the invoice that gets captured as the image. */}
-      <div aria-hidden="true" className="pointer-events-none fixed left-[-9999px] top-0">
-        <InvoiceImage ref={invoiceRef} order={order} />
-      </div>
     </div>
   );
 }
