@@ -5,7 +5,7 @@ import { PAYMENT_ACCOUNTS, PAYMENT_ACCOUNT_HOLDER } from "@/jastip/lib/paymentAc
 import type { OrderDetail } from "@/jastip/types/order";
 
 // Print-specific palette: independent from browser CSS and screen dimensions.
-const PRINT = { ink: "#263632", muted: "#64716D", accent: "#119C90", line: "#DEE5E2", light: "#F3F7F5" };
+const PRINT = { ink: "#2A2650", muted: "#6B6690", accent: "#4A3A9C", line: "#DFDCEF", light: "#F4F3FB" };
 const money = (amount: number) => formatRupiah(amount).replace(/\u00a0/g, " ");
 
 export function createInvoicePdf(order: OrderDetail): jsPDF {

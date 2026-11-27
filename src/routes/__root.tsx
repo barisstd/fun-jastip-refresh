@@ -83,6 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Jastip Ijun" },
       { name: "description", content: "Cek pesanan Jastip Ijun" },
+      { name: "theme-color", content: "#4a3a9c" },
       
       { property: "og:title", content: "Jastip Ijun" },
       { property: "og:description", content: "Cek pesanan Jastip Ijun" },
